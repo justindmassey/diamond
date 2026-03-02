@@ -54,8 +54,8 @@ class Node {
       return result;
     }
     for (let child of this.children) {
-      if (child.name === path[0]) {
-        if (path.length === 1) {
+      if (child.name == path[0]) {
+        if (path.length == 1) {
           result.push(child);
         } else {
           child.findPath(path.slice(1), result);
