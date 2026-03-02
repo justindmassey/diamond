@@ -82,17 +82,22 @@ function online(line) {
     if (!name) {
       root.add(path.slice(1));
     } else {
-      let rest = path.slice(1);
-      let nodes = root.find(name);
       let added = false;
-      for (let node of nodes) {
-        if (node.add(rest)) {
-          added = true;
+      let nodes = root.find(name);
+      if (!nodes.length) {
+        root.add(path);
+        added = true;
+      } else {
+        let rest = path.slice(1);
+        for (let node of nodes) {
+          if (node.add(rest)) {
+            added = true;
+          }
         }
       }
       if (!added) {
         for (let node of nodes) {
-          console.log(cc.magenta(node.getPath().slice(1).join(", ") + ":"));
+          console.log(cc.magenta(node.getPath().slice(1).join("/") + ":"));
           node.print();
           console.log();
         }
