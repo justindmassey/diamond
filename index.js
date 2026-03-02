@@ -72,12 +72,12 @@ class Node {
 const root = new Node();
 
 function online(line) {
-  if (line.trim() == ",") {
+  if (line.trim() == ".") {
     for (let child of root.children) {
       child.print();
     }
   } else {
-    let path = line.split(",").map((name) => name.trim());
+    let path = line.split(".").map((name) => name.trim());
     let name = path[0];
     if (!name) {
       root.add(path.slice(1));
@@ -97,7 +97,7 @@ function online(line) {
       }
       if (!added) {
         for (let node of nodes) {
-          console.log(cc.magenta(node.getPath().slice(1).join("/") + ":"));
+          console.log(cc.magenta(node.getPath().slice(1).join(".")));
           node.print();
           console.log();
         }
@@ -107,8 +107,8 @@ function online(line) {
 }
 
 if (debug) {
-  online(", user, justin, name");
-  online("name, vorname");
-  online("name, nachname");
+  online(".user.justin.name");
+  online("name.vorname");
+  online("name.nachname");
   online("name");
 }
