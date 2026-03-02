@@ -13,10 +13,16 @@ class Node {
   add(path) {
     if (path.length) {
       let found = false;
-      let rest = path.slice(1);
       let added = false;
+      let name = path[0];
+      let rest = path.slice(1);
+      if (name.startsWith("+")) {
+        name = name.slice(1);
+        this.appendChild(new Node(name));
+        added = true;
+      }
       for (let child of this.children) {
-        if (child.name == path[0]) {
+        if (child.name == name) {
           found = true;
           if (child.add(rest)) {
             added = true;
@@ -24,7 +30,7 @@ class Node {
         }
       }
       if (!found) {
-        let child = new Node(path[0]);
+        let child = new Node(name);
         this.appendChild(child);
         added = true;
         child.add(rest);
