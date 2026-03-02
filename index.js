@@ -50,8 +50,9 @@ class Node {
   }
 
   findPath(path, result = []) {
-    if (!path.length) return result;
-
+    if (!path.length) {
+      return result;
+    }
     for (let child of this.children) {
       if (child.name === path[0]) {
         if (path.length === 1) {
