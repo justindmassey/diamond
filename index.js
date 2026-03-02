@@ -92,6 +92,7 @@ class Node {
 const root = new Node();
 
 function online(line) {
+  line = line.replace(/([^.])\+([^.])/g, "$1.+$2");
   if (line.trim() == ".") {
     for (let child of root.children) {
       child.print();
