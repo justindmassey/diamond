@@ -49,6 +49,21 @@ class Node {
     return result;
   }
 
+  findPath(path, result = []) {
+    if (!path.length) return result;
+
+    for (let child of this.children) {
+      if (child.name === path[0]) {
+        if (path.length === 1) {
+          result.push(child);
+        } else {
+          child.findPath(path.slice(1), result);
+        }
+      }
+    }
+    return result;
+  }
+
   print(indent = 0) {
     console.log(" ".repeat(indent) + this.name);
     for (let child of this.children) {
@@ -67,6 +82,10 @@ class Node {
     }
     return path;
   }
+
+  printPath() {
+    console.log(cc.magenta(this.getPath().slice(1).join(".")));
+  }
 }
 
 const root = new Node();
@@ -79,8 +98,15 @@ function online(line) {
   } else {
     let path = line.split(".").map((name) => name.trim());
     let name = path[0];
+    let rest = path.slice(1);
     if (!name) {
-      root.add(path.slice(1));
+      if (!root.add(rest)) {
+        for (let node of root.findPath(rest)) {
+          node.printPath();
+          node.print();
+          console.log();
+        }
+      }
     } else {
       let added = false;
       let nodes = root.find(name);
@@ -88,7 +114,6 @@ function online(line) {
         root.add(path);
         added = true;
       } else {
-        let rest = path.slice(1);
         for (let node of nodes) {
           if (node.add(rest)) {
             added = true;
@@ -97,7 +122,7 @@ function online(line) {
       }
       if (!added) {
         for (let node of nodes) {
-          console.log(cc.magenta(node.getPath().slice(1).join(".")));
+          node.printPath();
           node.print();
           console.log();
         }
