@@ -98,35 +98,67 @@ function online(line) {
       child.print();
     }
   } else {
+    let remove = false;
+    if (line.startsWith("-")) {
+      remove = true;
+      line = line.slice(1);
+    }
     let path = line.split(".").map((name) => name.trim());
-    let name = path[0];
-    let rest = path.slice(1);
-    if (!name) {
-      if (!root.add(rest)) {
-        for (let node of root.findPath(rest)) {
-          node.printPath();
-          node.print();
-          console.log();
-        }
-      }
-    } else {
-      let added = false;
-      let nodes = root.find(name);
-      if (!nodes.length) {
-        root.add(path);
-        added = true;
+    if (remove) {
+      let targets;
+
+      let name = path[0];
+      let rest = path.slice(1);
+
+      if (!name) {
+        targets = root.findPath(rest);
       } else {
-        for (let node of nodes) {
-          if (node.add(rest)) {
-            added = true;
+        let seeds = root.find(name);
+        targets = [];
+        for (let seed of seeds) {
+          if (!rest.length) {
+            targets.push(seed);
+          } else {
+            seed.findPath(rest, targets);
           }
         }
       }
-      if (!added) {
-        for (let node of nodes) {
-          node.printPath();
-          node.print();
-          console.log();
+
+      for (let node of targets) {
+        if (node.parent) {
+          node.parent.children = node.parent.children.filter((c) => c !== node);
+        }
+      }
+    } else {
+      let name = path[0];
+      let rest = path.slice(1);
+      if (!name) {
+        if (!root.add(rest)) {
+          for (let node of root.findPath(rest)) {
+            node.printPath();
+            node.print();
+            console.log();
+          }
+        }
+      } else {
+        let added = false;
+        let nodes = root.find(name);
+        if (!nodes.length) {
+          root.add(path);
+          added = true;
+        } else {
+          for (let node of nodes) {
+            if (node.add(rest)) {
+              added = true;
+            }
+          }
+        }
+        if (!added) {
+          for (let node of nodes) {
+            node.printPath();
+            node.print();
+            console.log();
+          }
         }
       }
     }
