@@ -92,14 +92,29 @@ class Node {
 }
 
 let root;
+let vars = {};
 
 function online(line) {
+  let m = line.match(/([^=]+)=(.*)/);
+  if (m) {
+    let key = m[1].trim();
+    let value = m[2].trim();
+    if (value) {
+      vars[key] = value;
+    } else {
+      delete vars[key];
+    }
+    return;
+  }
+  for (let key in vars) {
+    line = line.replaceAll(key, vars[key]);
+  }
   line = line.replace(/([^.])\+([^.])/g, "$1.+$2");
   if (line.trim() == ".") {
     for (let child of root.children) {
       process.stdout.write(child.toString());
-      console.log();
     }
+    console.log();
   } else {
     let remove = false;
     if (line.startsWith("-")) {
