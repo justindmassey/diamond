@@ -106,11 +106,13 @@ function online(line) {
     let path = line.split(".").map((name) => name.trim());
     if (remove) {
       let targets;
-
       let name = path[0];
       let rest = path.slice(1);
-
       if (!name) {
+        if (!rest[0]) {
+          root.children = [];
+          return;
+        }
         targets = root.findPath(rest);
       } else {
         let seeds = root.find(name);
@@ -123,7 +125,6 @@ function online(line) {
           }
         }
       }
-
       for (let node of targets) {
         if (node.parent) {
           node.parent.children = node.parent.children.filter((c) => c !== node);
