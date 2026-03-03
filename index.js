@@ -106,9 +106,6 @@ function online(line) {
     }
     return;
   }
-  for (let key in vars) {
-    line = line.replaceAll(key, vars[key]);
-  }
   line = line.replace(/([^.])\+([^.])/g, "$1.+$2");
   if (line.trim() == ".") {
     for (let child of root.children) {
@@ -122,6 +119,17 @@ function online(line) {
       line = line.slice(1);
     }
     let path = line.split(".").map((name) => name.trim());
+    for (let key in vars) {
+      for (let i = 0; i < path.length; i++) {
+        if (path[i].startsWith("+")) {
+          if (path[i].slice(1) == key) {
+            path[i] = "+" + vars[key];
+          }
+        } else if (path[i] == key) {
+          path[i] = vars[key];
+        }
+      }
+    }
     if (remove) {
       let targets;
       let name = path[0];
