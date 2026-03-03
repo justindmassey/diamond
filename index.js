@@ -114,6 +114,7 @@ function online(line) {
       if (!name) {
         if (!rest[0] && rest.length == 1) {
           root.children = [];
+          save();
           return;
         }
         targets = root.findPath(rest);
