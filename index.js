@@ -109,7 +109,7 @@ function online(line) {
       let name = path[0];
       let rest = path.slice(1);
       if (!name) {
-        if (!rest[0]) {
+        if (!rest[0] && rest.length == 1) {
           root.children = [];
           return;
         }
