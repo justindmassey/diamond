@@ -119,15 +119,15 @@ function online(line) {
       line = line.slice(1);
     }
     let path = line.split(".").map((name) => name.trim());
-    for (let key in vars) {
-      for (let i = 0; i < path.length; i++) {
-        if (path[i].startsWith("+")) {
-          if (path[i].slice(1) == key) {
-            path[i] = "+" + vars[key];
-          }
-        } else if (path[i] == key) {
-          path[i] = vars[key];
+    for (let i = 0; i < path.length; i++) {
+      let seg = path[i];
+      if (seg.startsWith("+")) {
+        let name = seg.slice(1);
+        if (vars[name]) {
+          path[i] = "+" + vars[name];
         }
+      } else if (vars[seg]) {
+        path[i] = vars[seg];
       }
     }
     if (remove) {
