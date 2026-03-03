@@ -171,7 +171,7 @@ function online(line) {
 function convertNode(node) {
   let result = new Node(node.line);
   for (let child of node.children) {
-    result.children.push(convertNode(child));
+    result.appendChild(convertNode(child));
   }
   return result;
 }
@@ -179,7 +179,11 @@ function convertNode(node) {
 let filename = path.join(__dirname, "diamond.tree");
 
 function save() {
-  fs.writeFile(filename, root.toString(), () => 0);
+  fs.writeFile(filename, root.toString(), "utf8", (err) => {
+    if (err) {
+      console.error("error saving");
+    }
+  });
 }
 
 function load(callback) {
@@ -192,6 +196,5 @@ function load(callback) {
 
 load((r) => {
   root = r;
-  console.log;
   rl = require("./lib/rl")(cc.cyan("<> "), online);
 });
