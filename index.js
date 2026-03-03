@@ -1,8 +1,9 @@
 const cc = require("ccolor");
-const debug = false;
-if (!debug) {
-  const rl = require("./lib/rl")(cc.cyan("<> "), online);
-}
+const parseIndentedText = require("./lib/parse-indented-text");
+const path = require("path");
+const fs = require("fs");
+
+let rl;
 
 class Node {
   constructor(name = "") {
@@ -65,11 +66,12 @@ class Node {
     return result;
   }
 
-  print(indent = 0) {
-    console.log(" ".repeat(indent) + this.name);
+  toString(indent = 0) {
+    let string = " ".repeat(indent) + this.name + "\n";
     for (let child of this.children) {
-      child.print(indent + 4);
+      string += child.toString(indent + 4);
     }
+    return string;
   }
   appendChild(child) {
     this.children.push(child);
@@ -89,13 +91,14 @@ class Node {
   }
 }
 
-const root = new Node();
+let root;
 
 function online(line) {
   line = line.replace(/([^.])\+([^.])/g, "$1.+$2");
   if (line.trim() == ".") {
     for (let child of root.children) {
-      child.print();
+      process.stdout.write(child.toString());
+      console.log();
     }
   } else {
     let remove = false;
@@ -137,8 +140,7 @@ function online(line) {
         if (!root.add(rest)) {
           for (let node of root.findPath(rest)) {
             node.printPath();
-            node.print();
-            console.log();
+            console.log(node.toString());
           }
         }
       } else {
@@ -157,18 +159,39 @@ function online(line) {
         if (!added) {
           for (let node of nodes) {
             node.printPath();
-            node.print();
-            console.log();
+            console.log(node.toString());
           }
         }
       }
     }
   }
+  save();
 }
 
-if (debug) {
-  online(".user.justin.name");
-  online("name.vorname");
-  online("name.nachname");
-  online("name");
+function convertNode(node) {
+  let result = new Node(node.line);
+  for (let child of node.children) {
+    result.children.push(convertNode(child));
+  }
+  return result;
 }
+
+let filename = path.join(__dirname, "diamond.tree");
+
+function save() {
+  fs.writeFile(filename, root.toString(), () => 0);
+}
+
+function load(callback) {
+  fs.readFile(filename, "utf8", (err, data) => {
+    if (data) {
+      callback(convertNode(parseIndentedText(data)));
+    } else callback(new Node());
+  });
+}
+
+load((r) => {
+  root = r;
+  console.log;
+  rl = require("./lib/rl")(cc.cyan("<> "), online);
+});
