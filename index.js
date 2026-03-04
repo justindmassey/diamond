@@ -50,7 +50,7 @@ class Node {
 
   find(name, result = []) {
     for (let child of this.children) {
-      if (name== "*" || child.name == name) {
+      if (name == "*" || child.name == name) {
         result.push(child);
       }
       child.find(name, result);
@@ -119,7 +119,6 @@ function online(line) {
     for (let child of root.children) {
       process.stdout.write(child.toString());
     }
-    console.log();
   } else {
     let remove = false;
     if (line.startsWith("-")) {
@@ -170,10 +169,7 @@ function online(line) {
       let rest = path.slice(1);
       if (!name) {
         if (!root.add(rest)) {
-          for (let node of root.findPath(rest)) {
-            node.printPath();
-            console.log(node.toString());
-          }
+          printNodes(root.findPath(rest));
         }
       } else {
         let added = false;
@@ -189,24 +185,30 @@ function online(line) {
           }
         }
         if (!added) {
+          let out = [];
           for (let node of nodes) {
             if (rest.length) {
-              let targets = [];
-              node.findPath(rest, targets);
-              for (let t of targets) {
-                t.printPath();
-                console.log(t.toString());
-              }
+              node.findPath(rest, out);
             } else {
-              node.printPath();
-              console.log(node.toString());
+              out.push(node);
             }
           }
+          printNodes(out);
         }
       }
     }
   }
   save();
+}
+
+function printNodes(nodes) {
+  for (let i = 0; i < nodes.length; i++) {
+    if (i > 0) {
+      console.log();
+    }
+    nodes[i].printPath();
+    process.stdout.write(nodes[i].toString());
+  }
 }
 
 function convertNode(node) {
