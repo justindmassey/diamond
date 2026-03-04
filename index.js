@@ -95,7 +95,7 @@ class Node {
   }
 
   printPath() {
-    console.log(cc.magenta(this.getPath().slice(1).join(".")));
+    console.log(cc.magenta(this.getPath().join(".")));
   }
 }
 
@@ -211,7 +211,9 @@ function printNodes(nodes) {
       console.log();
     }
     nodes[i].printPath();
-    process.stdout.write(nodes[i].toString());
+    if (nodes[i].children.length) {
+      process.stdout.write(nodes[i].toString());
+    }
   }
 }
 
