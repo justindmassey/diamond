@@ -190,8 +190,17 @@ function online(line) {
         }
         if (!added) {
           for (let node of nodes) {
-            node.printPath();
-            console.log(node.toString());
+            if (rest.length) {
+              let targets = [];
+              node.findPath(rest, targets);
+              for (let t of targets) {
+                t.printPath();
+                console.log(t.toString());
+              }
+            } else {
+              node.printPath();
+              console.log(node.toString());
+            }
           }
         }
       }
