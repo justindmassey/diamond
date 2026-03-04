@@ -50,7 +50,7 @@ class Node {
 
   find(name, result = []) {
     for (let child of this.children) {
-      if (child.name == name) {
+      if (name== "*" || child.name == name) {
         result.push(child);
       }
       child.find(name, result);
