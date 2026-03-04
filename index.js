@@ -17,6 +17,14 @@ class Node {
       let added = false;
       let name = path[0];
       let rest = path.slice(1);
+      if (name === "*") {
+        for (let child of this.children) {
+          if (child.add(rest)) {
+            added = true;
+          }
+        }
+        return added;
+      }
       if (name.startsWith("+")) {
         name = name.slice(1);
         this.appendChild(new Node(name));
@@ -55,7 +63,7 @@ class Node {
       return result;
     }
     for (let child of this.children) {
-      if (child.name == path[0]) {
+      if (child.name == path[0] || path[0] == "*") {
         if (path.length == 1) {
           result.push(child);
         } else {
