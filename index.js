@@ -115,6 +115,10 @@ function online(line) {
     return;
   }
   line = line.replace(/([^.])\+([^.])/g, "$1.+$2");
+  if (!line) {
+    console.clear();
+    line = ".";
+  }
   if (line.trim() == ".") {
     for (let child of root.children) {
       process.stdout.write(child.toString());
