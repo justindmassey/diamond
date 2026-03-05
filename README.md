@@ -190,6 +190,81 @@ person.+note.text
 ```
 
 This appends a new `note` node even if one already exists.
+The `.` in front of the `+` is optional.
+
+---
+
+# Wrap operator
+
+A trailing `+` wraps the existing children of a node.
+
+```
+project.tasks+
+```
+
+creates a new `tasks` node under `project` and moves **all previous children of `project`** under that new node.
+
+Example:
+
+Before
+
+```
+project
+    task1
+    task2
+    task3
+```
+
+Command
+
+```
+project.tasks+
+```
+
+After
+
+```
+project
+    tasks
+        task1
+        task2
+        task3
+```
+
+Existing nodes with the same name are wrapped as well.
+
+Before
+
+```
+project
+    task1
+    tasks
+        archived
+    task2
+```
+
+Command
+
+```
+project.tasks+
+```
+
+After
+
+```
+project
+    tasks
+        task1
+        tasks
+            archived
+        task2
+```
+
+If more segments follow, the dot after the wrap operator must be written explicitly:
+
+```
+project.tasks+.done
+```
 
 ---
 
@@ -249,6 +324,8 @@ Entering a single dot prints all top-level subtrees:
 ```
 .
 ```
+
+Pressing **enter on an empty line** clears the screen and prints the tree.
 
 ---
 

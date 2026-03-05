@@ -25,6 +25,21 @@ class Node {
         }
         return added;
       }
+      if (name.length > 1 && name.endsWith("+") && !name.startsWith("+")) {
+        let wrapName = name.slice(0, -1);
+
+        let wrapper = new Node(wrapName);
+        for (let child of this.children) {
+          wrapper.appendChild(child);
+        }
+        this.children = [];
+        this.appendChild(wrapper);
+        added = true;
+        if (rest.length) {
+          wrapper.add(rest);
+        }
+        return true;
+      }
       if (name.startsWith("+")) {
         name = name.slice(1);
         this.appendChild(new Node(name));
@@ -136,6 +151,11 @@ function online(line) {
         let name = seg.slice(1);
         if (vars[name]) {
           path[i] = "+" + vars[name];
+        }
+      } else if (seg.length > 1 && seg.endsWith("+")) {
+        let name = seg.slice(0, -1)
+        if (vars[name]) {
+          path[i] = vars[name] + "+";
         }
       } else if (vars[seg]) {
         path[i] = vars[seg];
