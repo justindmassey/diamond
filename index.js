@@ -144,6 +144,11 @@ function online(line) {
       remove = true;
       line = line.slice(1);
     }
+    let splice = false;
+    if (line.endsWith("-")) {
+      splice = true;
+      line = line.slice(0, -1);
+    }
     let path = line.split(".").map((name) => name.trim());
     for (let i = 0; i < path.length; i++) {
       let seg = path[i];
@@ -153,7 +158,7 @@ function online(line) {
           path[i] = "+" + vars[name];
         }
       } else if (seg.length > 1 && seg.endsWith("+")) {
-        let name = seg.slice(0, -1)
+        let name = seg.slice(0, -1);
         if (vars[name]) {
           path[i] = vars[name] + "+";
         }
@@ -191,6 +196,40 @@ function online(line) {
     } else {
       let name = path[0];
       let rest = path.slice(1);
+      if (splice) {
+        let targets;
+
+        if (!name) {
+          targets = root.findPath(rest);
+        } else {
+          let seeds = root.find(name);
+          targets = [];
+          for (let seed of seeds) {
+            if (!rest.length) {
+              targets.push(seed);
+            } else {
+              seed.findPath(rest, targets);
+            }
+          }
+        }
+
+        for (let node of targets) {
+          if (!node.parent) continue;
+
+          let parent = node.parent;
+          let index = parent.children.indexOf(node);
+
+          for (let child of node.children) {
+            child.parent = parent;
+          }
+
+          parent.children.splice(index, 1, ...node.children);
+        }
+
+        save();
+        return;
+      }
+
       if (!name) {
         if (!root.add(rest)) {
           printNodes(root.findPath(rest));

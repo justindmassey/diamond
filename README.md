@@ -286,6 +286,47 @@ Clears the entire tree.
 
 ---
 
+# Splice operator
+
+A trailing `-` removes matching nodes **but keeps their children**.
+
+```
+person.address-
+```
+
+Example:
+
+Before
+
+```
+person
+    address
+        city
+        zip
+    name
+        first
+```
+
+Command
+
+```
+person.address-
+```
+
+After
+
+```
+person
+    city
+    zip
+    name
+        first
+```
+
+The `address` node is removed and its children are **spliced into the parent**.
+
+---
+
 # Variables
 
 Variables can be assigned with:
