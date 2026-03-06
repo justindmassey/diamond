@@ -302,7 +302,75 @@ function load(callback) {
   });
 }
 
+function completer(line) {
+  if (line.includes("=")) {
+    return [[], line];
+  }
+
+  let original = line;
+
+  let removePrefix = line.startsWith("-");
+  if (removePrefix) {
+    line = line.slice(1);
+  }
+
+  let spliceSuffix = line.endsWith("-");
+  if (spliceSuffix) {
+    line = line.slice(0, -1);
+  }
+
+  let path = line.split(".");
+  let partial = path.pop() || "";
+
+  let parents;
+
+  if (!path.length) {
+    parents = [root];
+  } else {
+    let name = path[0];
+    let rest = path.slice(1);
+
+    if (!name) {
+      parents = rest.length ? root.findPath(rest) : [root];
+    } else {
+      let seeds = root.find(name);
+      parents = [];
+
+      if (!rest.length) {
+        parents = seeds;
+      } else {
+        for (let seed of seeds) {
+          seed.findPath(rest, parents);
+        }
+      }
+    }
+  }
+
+  let names = new Set();
+
+  for (let p of parents) {
+    for (let c of p.children) {
+      if (c.name.startsWith(partial)) {
+        names.add(c.name);
+      }
+    }
+  }
+
+  let prefix = path.join(".");
+  if (prefix) prefix += ".";
+
+  if (removePrefix) prefix = "-" + prefix;
+
+  let matches = [...names].map(n => prefix + n);
+
+  if (spliceSuffix) {
+    matches = matches.map(m => m + "-");
+  }
+
+  return [matches, original];
+}
+
 load((r) => {
   root = r;
-  rl = require("./lib/rl")(cc.cyan("<> "), online);
+  rl = require("./lib/rl")(cc.cyan("<> "), online, completer);
 });
