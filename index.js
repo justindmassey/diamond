@@ -319,52 +319,83 @@ function completer(line) {
     line = line.slice(0, -1);
   }
 
-  let path = line.split(".");
-  let partial = path.pop() || "";
+  let path = line.split(".").map((name) => name.trim());
+  let partial = path.pop();
+  if (partial === undefined) {
+    partial = "";
+  }
 
-  let parents;
+  for (let i = 0; i < path.length; i++) {
+    let seg = path[i];
+    if (seg.startsWith("+")) {
+      let name = seg.slice(1);
+      if (vars[name]) {
+        path[i] = "+" + vars[name];
+      }
+    } else if (seg.length > 1 && seg.endsWith("+")) {
+      let name = seg.slice(0, -1);
+      if (vars[name]) {
+        path[i] = vars[name] + "+";
+      }
+    } else if (vars[seg]) {
+      path[i] = vars[seg];
+    }
+  }
 
-  if (!path.length) {
-    parents = [root];
+  let names = [];
+
+  if (path.length === 0 && !(line.startsWith("."))) {
+    names = root.find("*").map((node) => node.name);
   } else {
-    let name = path[0];
-    let rest = path.slice(1);
+    let parents;
 
-    if (!name) {
-      parents = rest.length ? root.findPath(rest) : [root];
+    if (!path.length) {
+      parents = [root];
     } else {
-      let seeds = root.find(name);
-      parents = [];
+      let name = path[0];
+      let rest = path.slice(1);
 
-      if (!rest.length) {
-        parents = seeds;
+      if (!name) {
+        if (!rest.length) {
+          parents = [root];
+        } else {
+          parents = root.findPath(rest);
+        }
       } else {
-        for (let seed of seeds) {
-          seed.findPath(rest, parents);
+        let seeds = root.find(name);
+        parents = [];
+        if (!rest.length) {
+          parents = seeds;
+        } else {
+          for (let seed of seeds) {
+            seed.findPath(rest, parents);
+          }
         }
       }
     }
-  }
 
-  let names = new Set();
-
-  for (let p of parents) {
-    for (let c of p.children) {
-      if (c.name.startsWith(partial)) {
-        names.add(c.name);
+    for (let parent of parents) {
+      for (let child of parent.children) {
+        names.push(child.name);
       }
     }
   }
 
+  names = [...new Set(names)].filter((name) => name.startsWith(partial));
+
   let prefix = path.join(".");
-  if (prefix) prefix += ".";
+  if (prefix) {
+    prefix += ".";
+  }
 
-  if (removePrefix) prefix = "-" + prefix;
+  if (removePrefix) {
+    prefix = "-" + prefix;
+  }
 
-  let matches = [...names].map(n => prefix + n);
+  let matches = names.map((name) => prefix + name);
 
   if (spliceSuffix) {
-    matches = matches.map(m => m + "-");
+    matches = matches.map((m) => m + "-");
   }
 
   return [matches, original];
