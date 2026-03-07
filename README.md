@@ -10,7 +10,13 @@ If a path causes **no insertion**, Diamond prints the **matching endpoint subtre
 The tree is stored as **indented text** in `diamond.tree`.
 
 ---
-
+# Usage
+```
+cd diamond
+npm install
+node .
+```
+---
 # Example
 
 Input:
