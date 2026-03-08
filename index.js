@@ -287,11 +287,7 @@ function convertNode(node) {
 let filename = path.join(__dirname, "diamond.tree");
 
 function save() {
-  fs.writeFile(filename, root.toString(), "utf8", (err) => {
-    if (err) {
-      console.error("error saving");
-    }
-  });
+  fs.writeFileSync(filename, root.toString(), "utf8");
 }
 
 function load(callback) {
